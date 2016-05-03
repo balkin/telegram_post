@@ -1,0 +1,11 @@
+<?php
+
+/**
+ * Implements hook_uninstall().
+ * Delete config variables
+ */
+function telegram_post_uninstall()
+{
+  variable_del('telegram_post_apikey');
+  variable_del('telegram_post_channel_name');
+}
