@@ -1,0 +1,6 @@
+name = "Telegram item"
+description = "Telegram notification"
+core = "7.x"
+version = "7.x-1.0"
+
+configure = admin/config/services/telegram-item

@@ -1,0 +1,123 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ * Описываем страницу конфигурации модуля
+ */
+function telegram_item_menu() {
+  $items = array();
+
+  $items['admin/config/services/telegram-item'] = array(
+	'title' => t('Telegram item config'),
+	'description' => t('Send message to telegram channel'),
+	'page callback' => 'drupal_get_form',
+	'page arguments' => array('telegram_item_config_form'),
+	'access arguments' => array('access telegram item'),
+	'file' => 'telegram_item_config.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ * Создаем права доступа
+ */
+function telegram_item_permission() {
+  return array(
+	'access telegram item' => array(
+	  'title' => t('Administer telegram item'),
+	  'description' => t('Access permission to telegram item'),
+	),
+	'telegram send message' => array(
+	  'title' => t('Telegram send message'),
+	  'description' => t('Allow user to telegram send message.'),
+	),
+  );
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ * Перемещаем hook_insert нашего модуля в самый низ (после модуля pathauto)
+ * Это нужно, чтобы получить alias для url ноды через модуль pathauto
+ */
+function telegram_item_module_implements_alter(&$implementations, $hook) {
+  $module = basename(__FILE__, '.module');
+  if(!empty($implementations[$module])){
+	$group = $implementations[$module];
+	unset($implementations[$module]);
+	$implementations[$module] = $group;
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ * Присоединяем наши элементы формы к форме ноды
+ */
+function telegram_item_form_node_form_alter(&$form, &$form_state) {
+  if (empty($form['#node']->type)) {
+	return;
+  }
+  // проверяем, имеет ли пользователь право на публикацию в Telegram
+  $user_access = user_access('telegram send message');
+
+  if ($user_access) {
+	// дополняем форму добавления/редактирования ноды
+	form_load_include($form_state, 'forms.inc', 'telegram_item');
+	__telegram_item_process_node_form($form);
+  }
+}
+
+/**
+ * Implements hook_node_insert().
+ */
+function telegram_item_node_insert($node) {
+  __telegram_item_process_node($node);
+}
+
+/**
+ * Implements hook_node_update().
+ */
+function telegram_item_node_update($node) {
+  __telegram_item_process_node($node);
+}
+
+/**
+ * Функция отправки сообщения в Telegram channel
+ */
+function __telegram_item_process_node($node) {
+  $apikey = variable_get('telegram_item_apikey');
+  $channel = variable_get('telegram_item_channel_name');
+  $user_access = user_access('telegram send message');
+
+  // проверяем, стоит ли отметка публикации ноды в Telegram
+  $post_node = isset($node->telegram_item_post_this_node) ? $node->telegram_item_post_this_node : FALSE;
+
+  if ($apikey && $channel && $user_access && $post_node) {
+	global $base_url;
+	// добавляем заголовок
+	$message = $node->title . "\r\n";
+
+	// добавляем url ноды
+	$message .= $base_url . '/' . drupal_get_path_alias('node/' . $node->nid);
+
+	$message = urlencode($message);
+	__telegram_item_send_message($message, $apikey, $channel);
+  }
+}
+
+function __telegram_item_send_message($message, $apikey, $channel) {
+  // составляем запрос по всем правилам Telegram api
+  $query = "https://api.telegram.org/bot" . $apikey .
+	"/sendMessage?disable_web_page_preview=true&chat_id=" . $channel .
+	"&text=" . $message;
+
+  error_log($query);
+  // выполняем наш запрос через curl
+  $curl = curl_init();
+  curl_setopt($curl, CURLOPT_URL, $query);
+  curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt($curl, CURLOPT_HEADER, 0);
+  curl_exec($curl);
+  curl_close($curl);
+}
