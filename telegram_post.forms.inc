@@ -6,12 +6,15 @@
  */
 function __telegram_post_process_node_form(&$form)
 {
+  $node = $form['#node'];
+  $default = variable_get('telegram_post_default_value', 0);
   // Create a fieldset
   $form['telegram_post'] = array(
     '#type' => 'fieldset',
     '#title' => t('Post to Telegram'),
     '#group' => 'additional_settings',
     '#weight' => 1,
+    '#default_value' => $default,
   );
 
   $form['telegram_post']['post_to_telegram'] = array(

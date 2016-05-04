@@ -10,8 +10,8 @@ function telegram_post_config_form($form, &$form_state)
     '#type' => 'textfield',
     '#title' => t('Bot apikey:'),
     '#default_value' => variable_get('telegram_post_apikey'),
-    '#description' => t('Enter apikey telegram bot. ') .
-      l('Details how to get bot apikey.',
+    '#description' => t('Telegram bot API key.') .
+      l('Learn how to create a telegram bot and get API key',
         'https://core.telegram.org/bots#botfather',
         array('attributes' => array('target' => '_blank'))),
   );
@@ -21,7 +21,14 @@ function telegram_post_config_form($form, &$form_state)
     '#type' => 'textfield',
     '#title' => t('Channel name:'),
     '#default_value' => variable_get('telegram_post_channel_name'),
-    '#description' => t('Enter telegram channel name. Example: <u>@lib365</u>'),
+    '#description' => t('Telegram channel name. Example: <u>@channel</u>'),
+  );
+
+  $form['telegram_post_default_value'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Post to Telegram by default'),
+    '#default_value' => variable_get('telegram_post_default_value', 0),
+    '#description' => t('When active, automatically post to Telegram when the node is first published.'),
   );
 
   return system_settings_form($form);
@@ -30,5 +37,5 @@ function telegram_post_config_form($form, &$form_state)
 function telegram_post_config_form_validate($form, &$form_state)
 {
   if (!preg_match('/^(@+[a-z0-9\-\_\s]+)/i', trim($form_state['values']['telegram_post_channel_name'])))
-    form_set_error('pr_pas', t('Please, insert correct channel name. Example: <u>@lib365</u>'));
+    form_set_error('pr_pas', t('Please provide a valid channel name. Example: <u>@channel</u>'));
 }
