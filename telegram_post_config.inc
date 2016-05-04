@@ -31,6 +31,13 @@ function telegram_post_config_form($form, &$form_state)
     '#description' => t('When active, automatically post to Telegram when the node is first published.'),
   );
 
+  $form['telegram_post_on_update'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Also post to Telegram on update'),
+    '#default_value' => variable_get('telegram_post_on_update', 0),
+    '#description' => t('Also announces to Telegram when the node is updated. May cause duplicate posts.'),
+  );
+
   return system_settings_form($form);
 }
 
