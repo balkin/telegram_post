@@ -9,11 +9,11 @@ function telegram_post_menu()
   $items = array();
 
   $items['admin/config/services/telegram-post'] = array(
-    'title' => t('Telegram item config'),
+    'title' => t('Telegram post config'),
     'description' => t('Send message to telegram channel'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('telegram_post_config_form'),
-    'access arguments' => array('access telegram item'),
+    'access arguments' => array('access telegram post'),
     'file' => 'telegram_post_config.inc',
   );
 
@@ -29,11 +29,11 @@ function telegram_post_permission()
   return array(
     'access telegram item' => array(
       'title' => t('Administer telegram item'),
-      'description' => t('Access permission to telegram item'),
+      'description' => t('Access permission to telegram post'),
     ),
     'telegram send message' => array(
       'title' => t('Telegram send message'),
-      'description' => t('Allow user to telegram send message.'),
+      'description' => t('Allow user to publish updates using Telegram.'),
     ),
   );
 }
