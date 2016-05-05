@@ -1,4 +1,5 @@
 <?php
+const TELEGRAM_SEND_MESSAGE = "https://api.telegram.org/bot%s/sendMessage?disable_web_page_preview=true&chat_id=%s&text=%s";
 
 /**
  * Implements hook_menu().
@@ -9,11 +10,11 @@ function telegram_post_menu()
   $items = array();
 
   $items['admin/config/services/telegram-post'] = array(
-    'title' => t('Telegram item config'),
+    'title' => t('Telegram post config'),
     'description' => t('Send message to telegram channel'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('telegram_post_config_form'),
-    'access arguments' => array('access telegram item'),
+    'access arguments' => array('access telegram post'),
     'file' => 'telegram_post_config.inc',
   );
 
@@ -29,11 +30,11 @@ function telegram_post_permission()
   return array(
     'access telegram item' => array(
       'title' => t('Administer telegram item'),
-      'description' => t('Access permission to telegram item'),
+      'description' => t('Access permission to telegram post'),
     ),
     'telegram send message' => array(
       'title' => t('Telegram send message'),
-      'description' => t('Allow user to telegram send message.'),
+      'description' => t('Allow user to publish updates using Telegram.'),
     ),
   );
 }
@@ -63,7 +64,7 @@ function telegram_post_form_node_form_alter(&$form, &$form_state)
   }
   // Check permissions
   if (user_access('telegram send message')) {
-    // дополняем форму добавления/редактирования ноды
+    // Adding telegram post form
     form_load_include($form_state, 'forms.inc', 'telegram_post');
     __telegram_post_process_node_form($form);
   }
@@ -98,27 +99,20 @@ function __telegram_post_process_node($node)
   $post_node = isset($node->post_to_telegram) ? $node->post_to_telegram : FALSE;
 
   if ($apikey && $channel && $user_access && $post_node) {
-    global $base_url;
-    // Add the title
-    $message = $node->title . "\r\n";
-    // Add the URL
-    $message .= $base_url . '/' . drupal_get_path_alias('node/' . $node->nid);
-    // TODO: Template
-    $message = urlencode($message);
+    $url = url('node/' . $node->nid, array('absolute' => TRUE, 'alias' => TRUE));
+    $url_alias = url('node/' . $node->nid, array('absolute' => TRUE));
+    $message = variable_get('telegram_post_default_format', 'New post: @title @url-alias');
+    $message = format_string($message, array('@url' => $url, '@url-alias' => $url_alias, '@title' => $node->title));
+    watchdog('telegram', "Publishing $message to $channel", array(), WATCHDOG_DEBUG, $url);
     __telegram_post_send_message($message, $apikey, $channel);
   }
 }
 
 function __telegram_post_send_message($message, $apikey, $channel)
 {
-  // Make an Telegram API call
-  $query = "https://api.telegram.org/bot" . $apikey .
-    "/sendMessage?disable_web_page_preview=true&chat_id=" . $channel .
-    "&text=" . $message;
-
-  // Use CURL to send the Telegram API call
+  // Call Telegram API using CURL
   $curl = curl_init();
-  curl_setopt($curl, CURLOPT_URL, $query);
+  curl_setopt($curl, CURLOPT_URL, sprintf(TELEGRAM_SEND_MESSAGE, $apikey, $channel, urlencode($message)));
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($curl, CURLOPT_HEADER, 0);
   curl_exec($curl);
