@@ -10,4 +10,5 @@ function telegram_post_uninstall()
   variable_del('telegram_post_channel_name');
   variable_del('telegram_post_default_value');
   variable_del('telegram_post_on_update');
+  variable_del('telegram_post_default_format');
 }
