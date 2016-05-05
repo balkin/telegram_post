@@ -8,6 +8,9 @@ function __telegram_post_process_node_form(&$form)
 {
   $node = $form['#node'];
   $default = variable_get('telegram_post_default_value', 0);
+  if ($default && !empty($node->nid) && !empty($node->status)) {
+    $default = variable_get('telegram_post_on_update', 0);
+  }
   // Create a fieldset
   $form['telegram_post'] = array(
     '#type' => 'fieldset',
