@@ -75,7 +75,7 @@ function telegram_post_form_node_form_alter(&$form, &$form_state)
  */
 function telegram_post_node_insert($node)
 {
-  __telegram_post_process_node($node);
+  __telegram_post_process_node($node, true);
 }
 
 /**
@@ -83,13 +83,13 @@ function telegram_post_node_insert($node)
  */
 function telegram_post_node_update($node)
 {
-  __telegram_post_process_node($node);
+  __telegram_post_process_node($node, false);
 }
 
 /**
  * Post the message to telegram
  */
-function __telegram_post_process_node($node)
+function __telegram_post_process_node($node, $created)
 {
   $apikey = variable_get('telegram_post_apikey');
   $channel = variable_get('telegram_post_channel_name');
@@ -101,7 +101,11 @@ function __telegram_post_process_node($node)
   if ($apikey && $channel && $user_access && $post_node) {
     $url = url('node/' . $node->nid, array('absolute' => TRUE, 'alias' => TRUE));
     $url_alias = url('node/' . $node->nid, array('absolute' => TRUE));
-    $message = variable_get('telegram_post_default_format', 'New post: @title @url-alias');
+    if ($created) {
+      $message = variable_get('telegram_post_default_format', 'New post: @title @url-alias');
+    } else {
+      $message = variable_get('telegram_post_update_default_format', 'Post updated: @title @url-alias');
+    }
     $message = format_string($message, array('@url' => $url, '@url-alias' => $url_alias, '@title' => $node->title));
     watchdog('telegram', "Publishing $message to $channel", array(), WATCHDOG_DEBUG, $url);
     __telegram_post_send_message($message, $apikey, $channel);
