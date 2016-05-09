@@ -102,17 +102,40 @@ function __telegram_post_process_node($node, $created)
     $url = url('node/' . $node->nid, array('absolute' => TRUE, 'alias' => TRUE));
     $url_alias = url('node/' . $node->nid, array('absolute' => TRUE));
     if ($created) {
-      $message = variable_get('telegram_post_default_format', 'New post: @title @url-alias');
+      $message = telegram_post_get_create_message();
     } else {
-      $message = variable_get('telegram_post_update_default_format', 'Post updated: @title @url-alias');
+      $message = telegram_post_get_update_message();
     }
     $message = format_string($message, array('@url' => $url, '@url-alias' => $url_alias, '@title' => $node->title));
     watchdog('telegram', "Publishing $message to $channel", array(), WATCHDOG_DEBUG, $url);
-    __telegram_post_send_message($message, $apikey, $channel);
+    telegram_post_send_message($message, $apikey, $channel);
   }
 }
 
-function __telegram_post_send_message($message, $apikey, $channel)
+/**
+ * @return string
+ */
+function telegram_post_get_create_message()
+{
+  return variable_get('telegram_post_default_format', 'New post: @title @url-alias');
+}
+
+/**
+ * @return string
+ */
+function telegram_post_get_update_message()
+{
+  return variable_get('telegram_post_update_default_format', 'Post updated: @title @url-alias');
+}
+
+/**
+ * Send announce message to Telegram
+ *
+ * @param $message string message text
+ * @param $apikey string bot API key
+ * @param $channel string channel name
+ */
+function telegram_post_send_message($message, $apikey, $channel)
 {
   // Call Telegram API using CURL
   $curl = curl_init();
