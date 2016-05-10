@@ -44,7 +44,16 @@ function telegram_post_config_form($form, &$form_state)
     '#maxlength' => 140,
     '#description' => t('This text will be used as a template for posting to Telegram. ' .
       'Following token replacements are available: @url, @url-alias and @title'),
-    '#default_value' => variable_get('telegram_post_default_format', t('New post: @title @url-alias')),
+    '#default_value' => telegram_post_get_create_message(),
+  );
+
+  $form['telegram_post_update_default_format'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Default format string'),
+    '#maxlength' => 140,
+    '#description' => t('This text will be used as a template for posting to Telegram. ' .
+      'Following token replacements are available: @url, @url-alias and @title'),
+    '#default_value' => telegram_post_get_update_message(),
   );
 
   return system_settings_form($form);

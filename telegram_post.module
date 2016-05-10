@@ -75,7 +75,7 @@ function telegram_post_form_node_form_alter(&$form, &$form_state)
  */
 function telegram_post_node_insert($node)
 {
-  __telegram_post_process_node($node);
+  __telegram_post_process_node($node, true);
 }
 
 /**
@@ -83,13 +83,13 @@ function telegram_post_node_insert($node)
  */
 function telegram_post_node_update($node)
 {
-  __telegram_post_process_node($node);
+  __telegram_post_process_node($node, false);
 }
 
 /**
  * Post the message to telegram
  */
-function __telegram_post_process_node($node)
+function __telegram_post_process_node($node, $created)
 {
   $apikey = variable_get('telegram_post_apikey');
   $channel = variable_get('telegram_post_channel_name');
@@ -101,14 +101,41 @@ function __telegram_post_process_node($node)
   if ($apikey && $channel && $user_access && $post_node) {
     $url = url('node/' . $node->nid, array('absolute' => TRUE, 'alias' => TRUE));
     $url_alias = url('node/' . $node->nid, array('absolute' => TRUE));
-    $message = variable_get('telegram_post_default_format', 'New post: @title @url-alias');
+    if ($created) {
+      $message = telegram_post_get_create_message();
+    } else {
+      $message = telegram_post_get_update_message();
+    }
     $message = format_string($message, array('@url' => $url, '@url-alias' => $url_alias, '@title' => $node->title));
     watchdog('telegram', "Publishing $message to $channel", array(), WATCHDOG_DEBUG, $url);
-    __telegram_post_send_message($message, $apikey, $channel);
+    telegram_post_send_message($message, $apikey, $channel);
   }
 }
 
-function __telegram_post_send_message($message, $apikey, $channel)
+/**
+ * @return string
+ */
+function telegram_post_get_create_message()
+{
+  return variable_get('telegram_post_default_format', 'New post: @title @url-alias');
+}
+
+/**
+ * @return string
+ */
+function telegram_post_get_update_message()
+{
+  return variable_get('telegram_post_update_default_format', 'Post updated: @title @url-alias');
+}
+
+/**
+ * Send announce message to Telegram
+ *
+ * @param $message string message text
+ * @param $apikey string bot API key
+ * @param $channel string channel name
+ */
+function telegram_post_send_message($message, $apikey, $channel)
 {
   // Call Telegram API using CURL
   $curl = curl_init();

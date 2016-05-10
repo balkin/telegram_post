@@ -7,8 +7,9 @@
 function __telegram_post_process_node_form(&$form)
 {
   $node = $form['#node'];
+  $updating = !empty($node->nid) && !empty($node->status);
   $default = variable_get('telegram_post_default_value', 0);
-  if ($default && !empty($node->nid) && !empty($node->status)) {
+  if ($default && $updating) {
     $default = variable_get('telegram_post_on_update', 0);
   }
   // Create a fieldset
@@ -34,5 +35,22 @@ function __telegram_post_process_node_form(&$form)
     $form['telegram_post']['post_to_telegram']['#disabled'] = TRUE;
     $form['telegram_post']['post_to_telegram']['#value'] = 0;
     $form['telegram_post']['post_to_telegram']['#description'] = t("API Key or Channel were not specified.");
+    return;
   }
+
+  $form['telegram_post']['status'] = array(
+    '#type' => 'textfield',
+    '#id' => 'telegram-status',
+    '#default_value' => $updating ? telegram_post_get_update_message() : telegram_post_get_create_message(),
+    '#description' => t('This text will be used as a template for posting to Telegram. Following token replacements are available: @url, @url-alias and @title'),
+    '#maxlength' => 200,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="post_to_telegram"]' => array(
+          'checked' => TRUE,
+        ),
+      )
+    )
+  );
+
 }
