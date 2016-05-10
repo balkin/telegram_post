@@ -26,6 +26,21 @@ function __telegram_post_process_node_form(&$form)
     '#description' => t('Announce this post to Telegram.'),
   );
 
+  $form['telegram_post']['status'] = array(
+    '#type' => 'textfield',
+    '#id' => 'telegram-status',
+    '#default_value' => telegram_post_get_create_message(),
+    '#description' => t('This text will be used as a template for posting to Telegram. Following token replacements are available: @url, @url-alias and @title'),
+    '#maxlength' => 200,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="telegram_post[post_to_telegram]"]' => array(
+          'checked' => TRUE,
+        ),
+      )
+    )
+  );
+
   $apikey = variable_get('telegram_post_apikey');
   $channel = variable_get('telegram_post_channel_name');
 
