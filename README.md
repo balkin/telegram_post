@@ -7,8 +7,6 @@ I'm trying to improve the module, make it more usable, and (ideally) to publish 
 
 # TODO
 * Make sure everything is localized properly (Russian and English)
-* Another template (on post updated)
-* Editing the Telegram post before publishing it
 * Link shortening support
 * Get rid of CURL or support standard PHP library
 * Support Drupal 8
