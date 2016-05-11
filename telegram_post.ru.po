@@ -1,0 +1,111 @@
+# $Id$
+#
+# Russian translation of telegram_post
+# Copyright 2016 <baron@baron.su>
+# Generated from files:
+#  telegram_post.forms.inc: n/a
+#  telegram_post_config.inc: n/a
+#  telegram_post.module: n/a
+#  telegram_post.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2016-05-11 22:59+0300\n"
+"PO-Revision-Date: 2016-05-11 22:59+0300\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Russian <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+
+#: telegram_post.forms.inc:18;26
+msgid "Post to Telegram"
+msgstr "Отправить в Telegram"
+
+#: telegram_post.forms.inc:27
+msgid "Announce this post to Telegram."
+msgstr "Отправить уведомление об этом посте в Telegram."
+
+#: telegram_post.forms.inc:37
+msgid "API Key or Channel were not specified."
+msgstr "Не указан ключ API или канал для отправки сообщений."
+
+#: telegram_post.forms.inc:45
+msgid "This text will be used as a template for posting to Telegram. Following token replacements are available: @url, @url-alias and @title"
+msgstr "Этот текст будет использован в качестве шаблона при отправке в Телеграм. Поддерживаются следующие переменные: @url, @url-alias и @title"
+
+#: telegram_post_config.inc:11
+msgid "Bot apikey:"
+msgstr "API ключ для бота"
+
+#: telegram_post_config.inc:13
+msgid "Telegram bot API key."
+msgstr "Ключ API для бота."
+
+#: telegram_post_config.inc:22
+msgid "Channel name:"
+msgstr "Имя канала:"
+
+#: telegram_post_config.inc:24
+msgid "Telegram channel name. Example: <u>@channel</u>"
+msgstr "Имя канала в Telegram. Например: <u>@channel</u>"
+
+#: telegram_post_config.inc:29
+msgid "Post to Telegram by default"
+msgstr "По умолчанию отправлять сообщение в Telegram"
+
+#: telegram_post_config.inc:31
+msgid "When active, automatically post to Telegram when the node is first published."
+msgstr "Когда выбрано, автоматически сообщать в телеграм о первой публикации записи."
+
+#: telegram_post_config.inc:36
+msgid "Also post to Telegram on update"
+msgstr "Также отправлять сообщение в Telegram при обновлении"
+
+#: telegram_post_config.inc:38
+msgid "Also announces to Telegram when the node is updated. May cause duplicate posts."
+msgstr "Также сообщать в Telegram об измененияях записей. Может отправлять дублированные записи."
+
+#: telegram_post_config.inc:43;52
+msgid "Default format string"
+msgstr "Формат строки по умолчанию"
+
+#: telegram_post_config.inc:65
+msgid "Please provide a valid channel name. Example: <u>@channel</u>"
+msgstr "Пожалуйста, укажите верное Имя канала в Telegram. Например: <u>@channel</u>"
+
+#: telegram_post.module:13
+msgid "Telegram post config"
+msgstr "Настройка отправки сообщений в Telegram"
+
+#: telegram_post.module:14
+msgid "Send message to telegram channel"
+msgstr "Отправить сообщение в канал в Telegram"
+
+#: telegram_post.module:32
+msgid "Administer telegram item"
+msgstr "Администрировать Telegram item"
+
+#: telegram_post.module:33
+msgid "Access permission to telegram post"
+msgstr "Разрешён доступ к отправке в Telegram"
+
+#: telegram_post.module:36
+msgid "Telegram send message"
+msgstr "Отправка сообщений в Telegram"
+
+#: telegram_post.module:37
+msgid "Allow user to publish updates using Telegram."
+msgstr "Разрешает пользователю публиковать уведомления в Telegram."
+
+#: telegram_post.info:0
+msgid "Telegram Post"
+msgstr "Отправка в Telegram"
+
+#: telegram_post.info:0
+msgid "Announce posts to Telegram"
+msgstr "Анонс записей в Telegram"
+
